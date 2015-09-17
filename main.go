@@ -11,7 +11,6 @@ func main() {
 
 	snake := NewSnake()
 
-	// snake.entity.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '□'})
 	level.AddEntity(snake)
 
 	game.Screen().SetLevel(level)
