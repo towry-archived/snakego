@@ -1,7 +1,6 @@
 package main
 
 import tl "github.com/JoelOtter/termloop"
-// import "fmt"
 
 type Direct int 
 
@@ -16,7 +15,7 @@ const (
 
 type Snake struct {
 	head *tl.Entity
-	body [BodyLength]*Body
+	body []*Body
 	food *Food
 	level *tl.BaseLevel
 	px int 
@@ -41,11 +40,8 @@ func NewSnake(game *tl.Game) (*Snake) {
 
 	snake.level.AddEntity(snake)
 
-	// lets start with simple
-	// suppose the snake is start from the top left corner
-	for i := 0; i < BodyLength; i++ {
-		snake.body[i] = NewBody(BodyLength - i - 1, 0, KeyArrowRight)
-	}
+	snake.body = make([]*Body, 10)
+	snake.size = 0
 
 	// create food
 	snake.food = NewFood()
@@ -70,7 +66,38 @@ func (s *Snake) Position() (int, int) {
 
 func (s *Snake) Collide(collision tl.Physical) {
 	if _, ok := collision.(*Food); ok {
-		s.food.entity.SetPosition(4, 4)
+		if cap(s.body) == s.size {
+			rooms := make([]*Body, s.size * 2)
+			copy(rooms, s.body)
+			s.body = rooms
+		}
+		var x, y int
+		var d Direct
+		if s.size == 0 {
+			x, y = s.head.Position()
+			d = s.dir
+		} else {
+			x, y = s.body[s.size - 1].Position()
+			d = s.body[s.size - 1].Direct()
+		}
+		switch d {
+			case KeyArrowRight:
+				x -= 1
+				break
+			case KeyArrowLeft:
+				x += 1
+				break
+			case KeyArrowUp: 
+				y += 1
+				break
+			case KeyArrowDown:
+				y -= 1
+				break
+		}
+
+		s.body[s.size] = NewBody(x, y, d)
+		s.size += 1
+		s.food.Invalid()
 	}
 }
 
@@ -118,15 +145,19 @@ func (s *Snake) Level () (*tl.BaseLevel) {
 }
 
 func (s *Snake) moveBody() {
+	if s.size == 0 {
+		return
+	}
+
 	d := s.body[0].dir
 	s.body[0].Move(s.dir)
-	for i := 1; i < BodyLength; i++ {
+	for i := 1; i < s.size; i++ {
 		d = s.body[i].Move(d)
 	}
 }
 
 func (s *Snake) drawBody(screen *tl.Screen) {
-	for i := 0; i < BodyLength; i++ {
+	for i := 0; i < s.size; i++ {
 		s.body[i].Draw(screen)
 	}
 }

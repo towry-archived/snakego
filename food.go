@@ -32,6 +32,10 @@ func (food *Food) Draw(screen *tl.Screen) {
 	food.entity.Draw(screen)
 }
 
+func (food *Food) Invalid() {
+	food.x = -1
+}
+
 func (food *Food) Tick(event tl.Event) {
 	// do not update this position
 }

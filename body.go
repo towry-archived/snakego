@@ -22,6 +22,10 @@ func NewBody(x, y int, d Direct) (*Body) {
 	return body
 }
 
+func (body *Body) Direct() Direct {
+	return body.dir
+}
+
 func (body *Body) Draw(s *tl.Screen) {
 	body.entity.Draw(s)
 }
