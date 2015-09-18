@@ -5,8 +5,6 @@ import tl "github.com/JoelOtter/termloop"
 
 type Direct int 
 
-const BodyLength = 5
-
 const (
 	KeyArrowUp Direct = -1
 	KeyArrowRight  Direct = -2
@@ -31,7 +29,7 @@ func NewSnake(game *tl.Game) (*Snake) {
 
 	snake := new(Snake)
 	snake.head = tl.NewEntity(1, 1, 1, 1)
-	snake.px = BodyLength
+	snake.px = 1
 	snake.py = 0
 	snake.head.SetPosition(snake.px, snake.py)
 	snake.head.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '#'})
