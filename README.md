@@ -17,8 +17,6 @@ Press <kbd>Space</kbd> to stop, press <kbd>Space</kbd> again to resume.
 
 Use arrow key to control the direction of snake.
 
-For now, use arrow key to make the snake move.
-
 ### TODO
 
 - [x] add food collision detect
