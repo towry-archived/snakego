@@ -11,12 +11,21 @@ make
 make run
 ```
 
+#### Keys
+
+Press <kbd>Space</kbd> to stop, press <kbd>Space</kbd> again to resume.
+
+Use arrow key to control the direction of snake.
+
 For now, use arrow key to make the snake move.
 
 ### TODO
 
-- [ ] add collision feature
-- [ ] add ticker
+- [x] add food collision detect
+- [x] add ticker
+- [ ] add border collision detect
+- [ ] add body collision detect
+- [ ] add speed control
 
 **Pull request is welcome :)**
 
