@@ -1,5 +1,6 @@
 package main
 
+import "time"
 import tl "github.com/JoelOtter/termloop"
 
 type Direct int 
@@ -22,6 +23,8 @@ type Snake struct {
 	py int
 	dir Direct
 	size int
+	stop bool
+	update time.Time
 }
 
 func NewSnake(game *tl.Game) (*Snake) {	
@@ -33,6 +36,8 @@ func NewSnake(game *tl.Game) (*Snake) {
 	snake.head.SetPosition(snake.px, snake.py)
 	snake.head.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '#'})
 	snake.dir = KeyArrowRight
+	snake.stop = false
+	snake.update = time.Now()
 
 	snake.level = tl.NewBaseLevel(tl.Cell{
 		Bg: tl.ColorCyan,
@@ -54,6 +59,40 @@ func NewSnake(game *tl.Game) (*Snake) {
 func (s *Snake) Draw(screen *tl.Screen) {
 	s.head.Draw(screen)
 	s.drawBody(screen)
+
+	if s.stop {
+		return
+	}
+
+	update := time.Now()
+	delta := update.Sub(s.update).Seconds()
+
+	if (delta <= 1) {
+		return
+	} else {
+		s.update = update
+	}
+
+	x, y := s.head.Position()
+	switch s.dir {
+	case KeyArrowRight:
+		x += 1
+		break
+	case KeyArrowDown:
+		y += 1
+		break
+	case KeyArrowLeft:
+		x -= 1
+		break
+	case KeyArrowUp:
+		y -= 1
+		break
+	}
+
+	s.head.SetPosition(x, y)
+	s.px = x
+	s.py = y
+	s.moveBody()
 }
 
 func (s *Snake) Size() (int, int) {
@@ -102,42 +141,59 @@ func (s *Snake) Collide(collision tl.Physical) {
 }
 
 func (s *Snake) Tick(event tl.Event) {
-	if event.Type == tl.EventKey {
-		x, y := s.px, s.py
-		var d Direct
+	x, y := s.px, s.py
+	var d Direct
+	var update bool
 
+	if event.Type == tl.EventKey {
 		switch event.Key {
 			case tl.KeyArrowRight:
 				x += 1
 				d = KeyArrowRight
+				update = true
 				break 
 			case tl.KeyArrowLeft:
 				x -= 1
 				d = KeyArrowLeft
+				update = true
 				break
 			case tl.KeyArrowUp:
 				y -= 1
 				d = KeyArrowUp
+				update = true
 				break
 			case tl.KeyArrowDown:
 				y += 1
 				d = KeyArrowDown
+				update = true
 				break
-			default: 
+			case tl.KeySpace:
+				if s.stop == true {
+					s.stop = false
+				} else {
+					s.stop = true
+				}
+				s.update = time.Now()
 				return
+			default:
+				d = s.dir
+				break
 		}
 
 		if s.dir + d == 0 {
 			return
 		}
+	} 
 
-		s.px = x 
-		s.py = y
-		s.dir = d
-		s.head.SetPosition(x, y)
-
-		s.moveBody()
+	if update {
+		s.update = time.Now()
 	}
+
+	s.px = x 
+	s.py = y
+	s.dir = d
+	s.head.SetPosition(x, y)
+	s.moveBody()
 }
 
 func (s *Snake) Level () (*tl.BaseLevel) {
