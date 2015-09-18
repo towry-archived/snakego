@@ -1,6 +1,7 @@
 package main
 
 import tl "github.com/JoelOtter/termloop"
+// import "fmt"
 
 type Direct int 
 
@@ -16,13 +17,16 @@ const (
 type Snake struct {
 	head *tl.Entity
 	body [BodyLength]*Body
+	food *Food
+	level *tl.BaseLevel
 	px int 
 	py int
 	dir Direct
 	size int
 }
 
-func NewSnake() (*Snake) {	
+func NewSnake(game *tl.Game) (*Snake) {	
+
 	snake := new(Snake)
 	snake.head = tl.NewEntity(1, 1, 1, 1)
 	snake.px = BodyLength
@@ -31,11 +35,21 @@ func NewSnake() (*Snake) {
 	snake.head.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '#'})
 	snake.dir = KeyArrowRight
 
+	snake.level = tl.NewBaseLevel(tl.Cell{
+		Bg: tl.ColorCyan,
+	})
+
+	snake.level.AddEntity(snake)
+
 	// lets start with simple
 	// suppose the snake is start from the top left corner
 	for i := 0; i < BodyLength; i++ {
 		snake.body[i] = NewBody(BodyLength - i - 1, 0, KeyArrowRight)
 	}
+
+	// create food
+	snake.food = NewFood()
+	snake.level.AddEntity(snake.food)
 
 	return snake
 }
@@ -44,6 +58,20 @@ func NewSnake() (*Snake) {
 func (s *Snake) Draw(screen *tl.Screen) {
 	s.head.Draw(screen)
 	s.drawBody(screen)
+}
+
+func (s *Snake) Size() (int, int) {
+	return s.head.Size()
+}
+
+func (s *Snake) Position() (int, int) {
+	return s.head.Position()
+}
+
+func (s *Snake) Collide(collision tl.Physical) {
+	if _, ok := collision.(*Food); ok {
+		s.food.entity.SetPosition(4, 4)
+	}
 }
 
 func (s *Snake) Tick(event tl.Event) {
@@ -83,6 +111,10 @@ func (s *Snake) Tick(event tl.Event) {
 
 		s.moveBody()
 	}
+}
+
+func (s *Snake) Level () (*tl.BaseLevel) {
+	return s.level
 }
 
 func (s *Snake) moveBody() {

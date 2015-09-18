@@ -26,6 +26,14 @@ func (body *Body) Draw(s *tl.Screen) {
 	body.entity.Draw(s)
 }
 
+func (body *Body) Size() (int, int) {
+	return body.entity.Size()
+}
+
+func (body *Body) Position() (int, int) {
+	return body.entity.Position()
+}
+
 func (body *Body) Move(d Direct) (dir Direct) {
 	var x, y int 
 	x = body.px
