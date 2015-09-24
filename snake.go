@@ -1,6 +1,7 @@
 package main
 
 import "time"
+import "io/ioutil"
 import tl "github.com/JoelOtter/termloop"
 
 type Direct int 
@@ -99,6 +100,7 @@ func (s *Snake) Collide(collision tl.Physical) {
 }
 
 func (s *Snake) Draw(screen *tl.Screen) {
+	s.bodyCollideDetect(s.px, s.py)
 	// check border collision
 	w, h := screen.Size()
 
@@ -121,6 +123,7 @@ func (s *Snake) Draw(screen *tl.Screen) {
 		return
 	}
 
+	// Control the speed.
 	update := time.Now()
 	delta := update.Sub(s.update).Seconds()
 
@@ -228,4 +231,32 @@ func (s *Snake) drawBody(screen *tl.Screen) {
 	for i := 0; i < s.size; i++ {
 		s.body[i].Draw(screen)
 	}
+}
+
+func (s *Snake) bodyCollideDetect(x, y int) {
+	if s.size == 0 {
+		return
+	}
+
+	for i := 1; i < s.size; i++ {
+		if x == s.body[i].px && y == s.body[i].py {
+			s.gameOver()
+			return
+		}
+	}
+}
+
+func (s *Snake) gameOver() {
+	s.stop = true
+	s.level.RemoveEntity(s)
+	s.level.RemoveEntity(s.food)
+
+	data, err := ioutil.ReadFile("gameover.txt")
+
+	if err != nil {
+		panic(err)
+	}
+
+	entity := tl.NewEntityFromCanvas(10, 1, tl.CanvasFromString(string(data)))
+	s.level.AddEntity(entity)
 }
