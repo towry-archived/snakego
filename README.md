@@ -17,7 +17,7 @@ make run
 
 Press <kbd>Space</kbd> to stop, press <kbd>Space</kbd> again to resume.
 
-Use arrow key to control the direction of snake or accelerate speek.
+Use arrow key to control the direction of snake or accelerate speed.
 
 ### TODO
 
@@ -25,8 +25,6 @@ Use arrow key to control the direction of snake or accelerate speek.
 - [x] add ticker
 - [x] add border collision detect
 - [x] add body collision detect
-
-**Pull request is welcome :)**
 
 --- 
 (c) Towry Wang
