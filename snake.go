@@ -53,46 +53,6 @@ func NewSnake(game *tl.Game) (*Snake) {
 	return snake
 }
 
-
-func (s *Snake) Draw(screen *tl.Screen) {
-	s.head.Draw(screen)
-	s.drawBody(screen)
-
-	if s.stop {
-		return
-	}
-
-	update := time.Now()
-	delta := update.Sub(s.update).Seconds()
-
-	if (delta <= 1) {
-		return
-	} else {
-		s.update = update
-	}
-
-	x, y := s.head.Position()
-	switch s.dir {
-	case KeyArrowRight:
-		x += 1
-		break
-	case KeyArrowDown:
-		y += 1
-		break
-	case KeyArrowLeft:
-		x -= 1
-		break
-	case KeyArrowUp:
-		y -= 1
-		break
-	}
-
-	s.head.SetPosition(x, y)
-	s.px = x
-	s.py = y
-	s.moveBody()
-}
-
 func (s *Snake) Size() (int, int) {
 	return s.head.Size()
 }
@@ -136,6 +96,60 @@ func (s *Snake) Collide(collision tl.Physical) {
 		s.size += 1
 		s.food.Invalid()
 	}
+}
+
+func (s *Snake) Draw(screen *tl.Screen) {
+	// check border collision
+	w, h := screen.Size()
+
+	if s.px > w {
+		s.px = 0
+	} else if s.px < 0 {
+		s.px = w
+	}
+
+	if s.py > h {
+		s.py = 0
+	} else if s.py < 0 {
+		s.py = h
+	}
+
+	s.head.Draw(screen)
+	s.drawBody(screen)
+
+	if s.stop {
+		return
+	}
+
+	update := time.Now()
+	delta := update.Sub(s.update).Seconds()
+
+	if (delta <= 1) {
+		return
+	} else {
+		s.update = update
+	}
+
+	x, y := s.head.Position()
+	switch s.dir {
+	case KeyArrowRight:
+		x += 1
+		break
+	case KeyArrowDown:
+		y += 1
+		break
+	case KeyArrowLeft:
+		x -= 1
+		break
+	case KeyArrowUp:
+		y -= 1
+		break
+	}
+
+	s.head.SetPosition(x, y)
+	s.px = x
+	s.py = y
+	s.moveBody()
 }
 
 func (s *Snake) Tick(event tl.Event) {

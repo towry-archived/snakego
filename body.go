@@ -27,6 +27,21 @@ func (body *Body) Direct() Direct {
 }
 
 func (body *Body) Draw(s *tl.Screen) {
+	// border collision detect
+	w, h := s.Size()
+
+	if body.px > w {
+		body.px = 0
+	} else if body.px < 0 {
+		body.px = w
+	}
+
+	if body.py > h {
+		body.py = 0
+	} else if body.py < 0 {
+		body.py = h
+	}
+	
 	body.entity.Draw(s)
 }
 
